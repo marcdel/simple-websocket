@@ -1,0 +1,48 @@
+<html>
+  <head>
+    <title>Get yer websockets here</title>
+  </head>
+  <body>
+    <div id="container" style="overflow: scroll; height: 400px;"></div>
+
+    <script type="text/javascript">
+      function createItem(value) {
+        const p = document.createElement('p');
+        p.textContent = value;
+        return p;
+      }
+
+      function appendItem(value) {
+        const container = document.getElementById("container");
+        container.appendChild(createItem(value.replace(/['"]+/g, '')));
+        container.animate({scrollTop: container.prop("scrollHeight")}, 500);
+      }
+
+      function createWebSocket() {
+        const socket = new WebSocket('ws://localhost:8080/ws');
+
+        socket.onopen = function () {
+          appendItem("Socket is open");
+        };
+
+        socket.onmessage = function (e) {
+          appendItem(e.data);
+        };
+
+        socket.onclose = function () {
+          appendItem("Socket closed");
+        };
+
+        return socket;
+      }
+
+      (function () {
+        if (window.WebSocket === undefined) {
+          appendItem('Your browser does not support WebSockets');
+        } else {
+          return createWebSocket();
+        }
+      })();
+    </script>
+  </body>
+</html>
